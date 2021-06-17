@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 
 class RefreshManager(val context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
+    // Veriyi al.
     override fun doWork(): Result {
 
         val getData = inputData
@@ -14,6 +15,7 @@ class RefreshManager(val context: Context, workerParams: WorkerParameters) : Wor
         return Result.success()
     }
 
+    // Arttir ve kaydet.
     private fun refresh(data : Int){
         val sharedPreferences = context.getSharedPreferences("com.carvio.workmanager",Context.MODE_PRIVATE)
         var savedData = sharedPreferences.getInt("savedData",0)
@@ -21,5 +23,4 @@ class RefreshManager(val context: Context, workerParams: WorkerParameters) : Wor
         println("savedData : $savedData")
         sharedPreferences.edit().putInt("savedData",savedData).apply()
     }
-
 }
