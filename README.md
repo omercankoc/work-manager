@@ -51,3 +51,15 @@ class RefreshManager(val context: Context, workerParams: WorkerParameters) : Wor
         sharedPreferences.edit().putInt("savedData",savedData).apply()
     }
 }
+```
+### Data Builder:
+```kotlin
+val data = Data.Builder().putInt("data",1).build() // Veri olustur.
+```
+### Create Constraints:
+```kotlin
+val constraints : Constraints = Constraints.Builder() // Build Constraints.
+    .setRequiredNetworkType(NetworkType.CONNECTED) // Must be connected to the network.
+    .setRequiresCharging(false) // The charge does not need to be full.
+    .build() // Build.
+```
