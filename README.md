@@ -19,3 +19,35 @@ Sometimes work fails. WorkManager offers flexible retry policies, including a co
 ### Work Chaining
 
 For complex related work, chain individual work tasks together using a fluent, natural, interface that allows you to control which pieces run sequentially and which run in parallel.
+
+## Sample
+### Dependencies:
+```gradle
+dependencies {
+    def work_version = "2.5.0"    
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+}
+```
+### Work Manager Class:
+A simple Work Manager that get data, increments it, and saves it with Shared Preferences.
+```kotlin
+class RefreshManager(val context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+
+    // Get Data.
+    override fun doWork(): Result {
+
+        val getData = inputData
+        val received = getData.getInt("data",0)
+        refresh(received)
+        return Result.success()
+    }
+
+    // Increments it, and saves it with Shared Preferences.
+    private fun refresh(data : Int){
+        val sharedPreferences = context.getSharedPreferences("com.carvio.workmanager",Context.MODE_PRIVATE)
+        var savedData = sharedPreferences.getInt("savedData",0)
+        savedData += data
+        println("savedData : $savedData")
+        sharedPreferences.edit().putInt("savedData",savedData).apply()
+    }
+}
