@@ -63,3 +63,73 @@ val constraints : Constraints = Constraints.Builder() // Build Constraints.
     .setRequiresCharging(false) // The charge does not need to be full.
     .build() // Build.
 ```
+### Work Request:
+it only works once.
+```kotlin
+val workRequest : WorkRequest = OneTimeWorkRequestBuilder<RefreshManager>()
+    .setConstraints(constraints) // Add constraints.
+    .setInputData(data) // Send data.
+    .setInitialDelay(100, TimeUnit.MILLISECONDS) // Delayed start.
+    .addTag("oneTimeRequest") // Add identifier.
+    .build() // Build.
+```
+### Periodic Work Request:
+Works with specified periods.
+```kotlin
+val periodicWorkManager : PeriodicWorkRequest = PeriodicWorkRequestBuilder<RefreshManager>(15,TimeUnit.MINUTES) // Assign period.
+    .setConstraints(constraints) // Add constraints.
+    .setInputData(data) // Send data.
+    .build() // Build.
+```
+### Chaining Work Manager:
+Run multiple work managers in turn.
+```kotlin
+val oneTimeWorkRequest :OneTimeWorkRequest = OneTimeWorkRequestBuilder<RefreshManager>()
+    .setConstraints(constraints) // Add constraints.
+    .setInputData(data) // Send data.
+    .build() // Build.
+
+WorkManager.getInstance(this).beginWith(oneTimeWorkRequest) // RUN...
+    .then(oneTimeWorkRequest) // RUN LATER...
+    .then(oneTimeWorkRequest) // RUN LATER...
+    .enqueue()
+```
+### Run Work Manager:
+1. Run:
+```kotlin
+WorkManager.getInstance(this).enqueue(workRequest)
+```
+2. Run by tag info:
+```kotlin
+WorkManager.getInstance(this).getWorkInfosByTag("oneTimeRequest")
+```
+3. Run by ID:
+```kotlin
+WorkManager.getInstance(this).getWorkInfoByIdLiveData(periodicWorkManager.id)
+```
+### Stop Work Manager:
+1. Stop:
+```kotlin
+WorkManager.getInstance(this).cancelAllWork()
+```
+2. Stop by tag info:
+```kotlin
+WorkManager.getInstance(this).cancelAllWorkByTag("oneTimeRequest")
+```
+3. Stop by ID:
+```kotlin
+WorkManager.getInstance(this).cancelWorkById(periodicWorkManager.id)
+```
+### Observe:
+Observes the employed work manager and provides conditional control.
+```kotlin
+WorkManager.getInstance(this).getWorkInfoByIdLiveData(periodicWorkManager.id).observe(this,
+    Observer {
+        if(it.state == WorkInfo.State.RUNNING){
+            println("RUNNING WORK MANAGER.")
+        } else if(it.state == WorkInfo.State.SUCCEEDED){
+            println("RUNNING WORK SUCCEEDED.")
+        }
+    }
+)
+```
